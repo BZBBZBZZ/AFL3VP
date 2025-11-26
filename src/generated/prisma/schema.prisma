@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(100)
+  phone String @unique @db.VarChar(20)
+
+  orders Order[]
+
+  @@map("customers")
+}
+
+model Restaurant {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(100)
+  description String  @db.Text
+  is_open     Boolean @default(true)
+
+  orders Order[]
+
+  @@map("restaurants")
+}
+
+// Ini adalah Pivot Table untuk Many-to-Many relation
+model Order {
+  id            Int      @id @default(autoincrement())
+  customer_id   Int
+  restaurant_id Int
+  total_items   Int
+  eta_minutes   Int // Estimated Time of Arrival
+  created_at    DateTime @default(now())
+
+  // Foreign Keys
+  customer   Customer   @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+
+  @@map("orders")
+}
