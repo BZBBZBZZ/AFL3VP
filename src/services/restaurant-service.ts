@@ -31,7 +31,7 @@ export class RestaurantService {
 
   static async update(id: number, req: UpdateRestaurantRequest) {
     const data = Validation.validate(RestaurantValidation.UPDATE, req);
-    await this.get(id); // check exist
+    await this.get(id); 
     const restaurant = await prismaClient.restaurant.update({
       where: { id },
       data,
